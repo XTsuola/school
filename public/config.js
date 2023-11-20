@@ -1,0 +1,1 @@
+window.httpurl = "http://192.168.0.201:8001"

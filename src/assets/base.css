@@ -1,0 +1,45 @@
+@import 'ant-design-vue/dist/antd.css';
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-weight: normal;
+}
+
+body {
+  line-height: 1.6;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-size: 100px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  width: 100%;
+}
+
+table>.ant-table-tbody>tr>td {
+  padding: 6px !important;
+}
+
+table>.ant-table-thead .ant-table-cell {
+  background-color: #323232;
+  color: #ffffff;
+  padding: 8px;
+}
+
+table>.ant-table-tbody .ant-table-row:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+table>.ant-table-tbody .ant-table-row:nth-child(even) {
+  background-color: #fafafa;
+}
