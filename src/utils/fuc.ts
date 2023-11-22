@@ -28,7 +28,7 @@ export function duplicateRemoval(a: any, b: any) {
 
 // 获取菜单
 export function getMenuData(id: any, routerData: any) {
-    if (id != 1) {
+    if (id != "1") {
         for (let i = 0; i < routerData.length; i++) {
             if (routerData[i].meta.isOk) {
                 routerData[i].meta.isShow = false

@@ -5,11 +5,11 @@
         </div>
         <a-form ref="formRef" :model="formState" name="basic" :wrapper-col="{ span: 14, offset: 1 }" autocomplete="off"
             @finish="onFinish" hideRequiredMark :label-col="{ span: 6 }">
-            <a-form-item label="邮箱地址" name="email" :rules="[{ required: true, validator: validEmail, trigger: 'blur' }]">
+            <a-form-item label="邮箱地址" name="email" :rules="[{ required: true, strigger: 'blur' }]">
                 <a-input style="border-radius: 5px;" v-model:value="formState.email" />
             </a-form-item>
             <a-form-item label="密码" name="password"
-                :rules="[{ required: true, message: '请输入密码！', trigger: 'blur' }, { max: 20, min: 6, trigger: 'blur' }]">
+                :rules="[{ required: true, message: '请输入密码！', trigger: 'blur' }, { max: 20, min: 1, trigger: 'blur' }]">
                 <a-input-password style="border-radius: 5px;" v-model:value="formState.password" />
             </a-form-item>
             <a-form-item label="确认密码" name="confirm_password" :rules="[{
@@ -53,10 +53,11 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { message } from "ant-design-vue"
 import { registerUser } from '@/api/login'
 import router from '@/router';
+import { getTagList } from '@/api/system';
 
 interface FormState {
     email: string
@@ -80,17 +81,7 @@ const addParams = reactive({
     img: "",
     tag: [1]
 })
-
-const tagList = [{
-    label: "游戏达人",
-    value: 1
-}, {
-    label: "内向",
-    value: 2
-}, {
-    label: "外向",
-    value: 3
-}]
+const tagList = ref([])
 
 function validEmail(_: any, value: any): any {
     return new Promise((resolve, reject) => {
@@ -157,9 +148,25 @@ function getImg(e: Event) {
     }
 }
 
-function goBack() {
-    router.go(-1)
+async function getTagListSelect() {
+    const res = await getTagList({})
+    if (res.data.code === 200) {
+        tagList.value = res.data.rows.map((item: any) => {
+            return {
+                label: item.name,
+                value: item.id
+            }
+        })
+    }
 }
+
+function goBack() {
+    router.push("/login")
+}
+
+onMounted(() => {
+    getTagListSelect()
+})
 
 </script>
 
