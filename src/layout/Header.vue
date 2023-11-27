@@ -66,13 +66,17 @@
 <script lang="ts" setup>
 import { useMenuStore } from '@/store/menu'
 import router from '@/router';
-import { reactive, ref } from 'vue';
-import { getTagList, getUserDetail } from '@/api/system';
+import { inject, reactive, ref } from 'vue';
+import { getTagList, getUserDetail, type EditUserType, editUser } from '@/api/system';
+import { message } from 'ant-design-vue';
 
+const socket: any = inject('socket')
+const ws = socket()
 const BaseImg: any = new URL("@/assets/img/touxiang.jpg", import.meta.url)
 const imgValue = ref()
-imgValue.value = 'http://127.0.0.1:7147/headImg/' + sessionStorage.getItem('img')
 
+
+imgValue.value = import.meta.env.VITE_APP_BASE_URL + 'headImg/' + sessionStorage.getItem('img')
 const menuStore = useMenuStore()
 const username = ref("")
 const name = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : ""
@@ -80,6 +84,7 @@ const id = sessionStorage.getItem("userId") ? sessionStorage.getItem("userId") :
 username.value = name ? name : ""
 const visible = ref(false)
 const detailData = reactive({
+    id: parseInt(id as string),
     username: "",
     tag: [],
     tagObj: [],
@@ -96,12 +101,14 @@ const tagList = ref([])
 async function showInfo() {
     getTagListSelect()
     visible.value = true
+    detailData.flag = false
     detailData.username = detailData.img = detailData.email = ""
     detailData.tagObj = []
     const res = await getUserDetail(id ? parseInt(id) : 0)
     if (res.data.code === 200) {
+        detailData.id = res.data.rows.id
         detailData.username = res.data.rows.username
-        detailData.img = 'http://127.0.0.1:7147/headImg/' + res.data.rows.img
+        detailData.img = import.meta.env.VITE_APP_BASE_URL + 'headImg/' + res.data.rows.img
         detailData.email = res.data.rows.email
         detailData.tagObj = res.data.rows.tagObj
         detailData.tag = res.data.rows.tag
@@ -110,6 +117,36 @@ async function showInfo() {
 
 async function handleOk() {
     await userInfoRef.value?.validate()
+    const reg = /^data:image/
+    const params: EditUserType = {
+        id: detailData.id,
+        username: detailData.username,
+        tag: detailData.tag,
+    }
+    if (reg.test(detailData.img)) {
+        params.img = detailData.img
+    }
+    if (detailData.flag) {
+        params.password = detailData.password
+    }
+    const res = await editUser(params)
+    if (res.data.code === 200) {
+        visible.value = false
+        const res2 = await getUserDetail(detailData.id)
+        if (res2.data.code == 200) {
+            sessionStorage.setItem("username", res2.data.rows.username)
+            sessionStorage.setItem("img", res2.data.rows.img)
+            if (params.password) {
+                message.error("您修改了密码，请重新登录！")
+                sessionStorage.clear()
+                localStorage.clear()
+                menuStore.updateList([])
+                router.push("/login")
+            } else {
+                location.reload()
+            }
+        }
+    }
 }
 
 function getImg(e: Event) {
@@ -156,6 +193,11 @@ function exit() {
     sessionStorage.clear()
     localStorage.clear()
     menuStore.updateList([])
+    let msg = {
+        code: 'logout',
+        id: id
+    }
+    ws.send(JSON.stringify(msg))
     router.push("/login")
     location.reload()
 }

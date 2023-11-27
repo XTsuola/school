@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue';
+import { inject, reactive, ref } from 'vue';
 import { message } from "ant-design-vue"
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
 import { login, type LoginParams } from "@/api/login"
@@ -46,6 +46,8 @@ interface FormState {
     password: string
 }
 
+const socket: any = inject('socket')
+const ws = socket()
 const menuStore = useMenuStore()
 const formState = reactive<FormState>({
     email: '2049434978@qq.com',
@@ -70,6 +72,11 @@ async function onFinish(values: FormState) {
             menuStore.updateList(list)
             sessionStorage.setItem("routerList", JSON.stringify(list))
             message.success(res.data.msg)
+            let msg = {
+                code: 'login',
+                id: res.data.data.id
+            }
+            ws.send(JSON.stringify(msg))
             router.push("/home")
         } else {
             message.error(res.data.msg)

@@ -24,6 +24,30 @@ export function getUserDetail(id: number) {
     })
 }
 
+// 修改用户信息
+export interface EditUserType {
+    id: number
+    username: string
+    img?: any
+    tag: number[]
+    password?: string
+}
+export function editUser(data: EditUserType) {
+    return request({
+        url: '/editUser',
+        method: 'post',
+        data: data
+    })
+}
+
+// 删除用户
+export function deleteUser(id: string) {
+    return request({
+        url: '/deleteUser?_id=' + id,
+        method: 'get'
+    })
+}
+
 // 获取标签列表
 export interface GetTagListType {
     page?: number

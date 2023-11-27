@@ -14,16 +14,22 @@
         <a-table :columns="columns" :loading="tableLoading" :data-source="tableData" :pagination="false" bordered>
             <template #bodyCell="{ column, record }">
                 <template v-if="column.key === 'tagObj'">
-                    <a-tag v-for="item in record.tagObj" style="min-width: 80px;margin-left: 2px;padding:1px;color: #ffffff;"
-                        :color="item.color">{{ item.name }}</a-tag>
+                    <a-tag v-for="item in record.tagObj"
+                        style="min-width: 80px;margin-left: 2px;padding:1px;color: #ffffff;" :color="item.color">{{
+                            item.name }}</a-tag>
+                </template>
+                <template v-if="column.key === 'online'">
+                    <a-tag style="min-width: 80px;margin-left: 2px;padding:1px;color: #ffffff;"
+                        :color="record.online == true ? '#87d068' : '#F44336'">{{ record.online == true ? "在线" : "离线"
+                        }}</a-tag>
                 </template>
                 <template v-if="column.key === 'action'">
                     <span
                         style="display: flex;justify-content: center;flex-wrap: nowrap;white-space: nowrap;align-items: center;">
-                        <span style="cursor: pointer;" @click="showModal(2, record)">
+                        <!-- <span style="cursor: pointer;" @click="showModal(2, record)">
                             <a-button type="link" size="small">修改</a-button>
                         </span>
-                        <a-divider type="vertical" />
+                        <a-divider type="vertical" /> -->
                         <a-popconfirm title="确定删除该数据吗?" ok-text="确定" cancel-text="取消" @confirm="deleteOk(record)">
                             <a-button type="link" danger size="small">删除</a-button>
                         </a-popconfirm>
@@ -54,7 +60,7 @@
 import { message, Table as aTable } from "ant-design-vue";
 import { onMounted, reactive, ref } from "vue";
 import { formatDate, getUpdateParams, valueError } from "@/utils/fuc";
-import { getUserList, type AddTagType, type GetUserListType, addTag, editTag, deleteTag, type EditTagType } from "@/api/system";
+import { getUserList, type AddTagType, type GetUserListType, addTag, editTag, deleteTag, type EditTagType, deleteUser } from "@/api/system";
 
 const currentPage = ref(1)
 const pageSize = ref(15)
@@ -91,13 +97,20 @@ const columns = ref<any>([
         dataIndex: "tagObj",
         key: "tagObj",
         align: "center",
-        width: 320
+        width: 400
+    },
+    {
+        title: "在线状态",
+        dataIndex: "online",
+        key: "online",
+        align: "center",
+        width: 160
     },
     {
         title: "操作",
         key: "action",
         align: "center",
-        width: 240
+        width: 160
     }
 ])
 const loading = ref(false)
@@ -160,12 +173,16 @@ function showModal(type: number, record?: any) {
 
 async function handleOk() {
     loading.value = true
-    
+
     loading.value = false
 }
 
 async function deleteOk(record: any) {
-    const res = await deleteTag(record._id)
+    if(record.id === 1) {
+        message.error("管理员账号不可被删除！") 
+        return false
+    }
+    const res = await deleteUser(record._id)
     if (res.status === 200) {
         message.success("删除成功")
         getList()
