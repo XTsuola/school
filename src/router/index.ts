@@ -21,11 +21,7 @@ const routeList = [{
   path: "/forget",
   name: "forget",
   component: Login
-}/* , {
-  path: "/preview",
-  name: "preview",
-  component: Preview
-} */]
+}]
 
 const router = createRouter({
   history: createWebHashHistory(),

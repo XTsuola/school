@@ -24,33 +24,24 @@ service.interceptors.request.use((config) => {
 
 let isShowMsg = true;
 // 响应拦截器
-service.interceptors.response.use((res) => {
-  return res;
-}, (error) => {
-  if (isShowMsg) {
-    if (error.response && error.response.status) {
-      if (isShowMsg && (error.response.status === 403 || error.response.status === 401)) {
-        message.error("身份过期");
-        sessionStorage.clear();
-        localStorage.clear();
-        router.push({ path: "/login" });
-      } else if (error.response.status === 404) {
-        message.error("资源未找到");
-      } else if (error.response.status === 500) {
-        message.error("服务器错误");
-      } else if (error.response.status === 400) {
-        message.error(valueError(error.response.data));
-      } else if (error.response.status === 413) {
-        message.error(valueError(error.response.data));
+service.interceptors.response.use(res => {
+  if (res.data.code == 401) {
+      if (isShowMsg) {
+          message.error(res.data.msg)
+          sessionStorage.clear()
+          router.push({ path: "/login" })
       }
-    } else {
-      message.error("响应超时");
-    }
+      isShowMsg = false
+      setTimeout(() => {
+          isShowMsg = true
+      }, 1500)
+      return false
+  } else {
+      return res
   }
-  isShowMsg = false;
-  setTimeout(() => {
-    isShowMsg = true;
-  }, 600);
-});
+}, error => {
+  return Promise.reject(error)
+})
+
 
 export default service;

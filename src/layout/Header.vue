@@ -34,8 +34,8 @@
                     </div>
                 </a-form-item>
                 <a-form-item label="标签" name="tag" :rules="[{ required: true, message: '请选择标签!' }]">
-                    <a-select v-model:value="detailData.tag" mode="multiple" style="width: 100%" placeholder="请选择"
-                        :options="tagList"></a-select>
+                    <a-select v-model:value="detailData.tag" :maxTagCount="3" mode="multiple" style="width: 100%"
+                        placeholder="请选择" :options="tagList"></a-select>
                 </a-form-item>
                 <a-form-item label="修改密码">
                     <a-radio-group v-model:value="detailData.flag">
@@ -66,7 +66,7 @@
 <script lang="ts" setup>
 import { useMenuStore } from '@/store/menu'
 import router from '@/router';
-import { inject, reactive, ref } from 'vue';
+import { inject, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { getTagList, getUserDetail, type EditUserType, editUser } from '@/api/system';
 import { message } from 'ant-design-vue';
 
@@ -74,8 +74,6 @@ const socket: any = inject('socket')
 const ws = socket()
 const BaseImg: any = new URL("@/assets/img/touxiang.jpg", import.meta.url)
 const imgValue = ref()
-
-
 imgValue.value = import.meta.env.VITE_APP_BASE_URL + 'headImg/' + sessionStorage.getItem('img')
 const menuStore = useMenuStore()
 const username = ref("")
@@ -96,7 +94,7 @@ const detailData = reactive({
 })
 const loading = ref(false)
 const userInfoRef = ref()
-const tagList = ref([])
+const tagList = ref<any>([])
 
 async function showInfo() {
     getTagListSelect()
@@ -183,7 +181,8 @@ async function getTagListSelect() {
         tagList.value = res.data.rows.map((item: any) => {
             return {
                 label: item.name,
-                value: item.id
+                value: item.id,
+                disabled: false
             }
         })
     }
@@ -201,6 +200,41 @@ function exit() {
     router.push("/login")
     location.reload()
 }
+
+let timer: any = null
+
+onMounted(() => {
+    if (!timer) {
+        timer = setInterval(() => {
+            ws.send(JSON.stringify({
+                code: 'status',
+                id: id,
+                online: true
+            }))
+        }, 3000)
+    }
+})
+
+onUnmounted(() => {
+    clearInterval(timer)
+})
+
+watch(() => detailData.tag, (newValue, oldValue) => {
+    if (newValue.length >= 3) {
+        for (let i = 0; i < tagList.value.length; i++) {
+            if (newValue.findIndex((item: any) => item == tagList.value[i].value) == -1) {
+                tagList.value[i].disabled = true
+            } else {
+                tagList.value[i].disabled = false
+            }
+        }
+    } else {
+        for (let i = 0; i < tagList.value.length; i++) {
+            tagList.value[i].disabled = false
+        }
+    }
+})
+
 
 </script>
 

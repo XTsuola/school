@@ -10,7 +10,6 @@ import zhCN from 'ant-design-vue/es/locale/zh_CN';
 
 </script>
 
-
 <style>
 @import "@/assets/base.css";
 </style>

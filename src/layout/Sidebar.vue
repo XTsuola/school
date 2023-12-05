@@ -1,9 +1,5 @@
 <template>
     <a-layout-sider width="230" style="overflow-y: auto;" class="sider" v-if="flag">
-        <!-- <div class="sideIcon" style="color: #fff;font-size: 15px;">
-            <img src="@/assets/img/logoName.png" />
-            EDA智能设计测试数字化平台
-        </div> -->
         <menuList style="height: calc(100% - 60px);"></menuList>
     </a-layout-sider>
 </template>

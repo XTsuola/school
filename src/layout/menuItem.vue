@@ -8,7 +8,8 @@
         </menuItem>
     </a-sub-menu>
     <a-menu-item :style="{ borderBottom: menu.meta?.isHome ? '1px solid rgba(255,255,255,.2)' : 0 }" :key="menu.meta?.key"
-        @click="goView" v-if="menu.meta?.menuType === 'menu' && (menu.meta.isShow || menu.meta.isHome)">
+        @click="goView"
+        v-if="menu.meta?.menuType === 'menu' && (menu.meta.isShow || menu.meta.isHome) && !menu.meta.isAddPage">
         <template #icon>
             <component v-if="menu.meta && (list.findIndex((item: any) => item === menu.meta?.key) != -1) && menu.meta.icon"
                 :is="getMenuIcon(menu.meta.icon)">
@@ -48,6 +49,4 @@ function getMenuIcon(menuIcon: string) {
 
 </script>
 
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>

@@ -5,7 +5,7 @@
         </div>
         <a-form ref="formRef" :model="formState" name="basic" :wrapper-col="{ span: 14, offset: 1 }" autocomplete="off"
             @finish="onFinish" hideRequiredMark :label-col="{ span: 6 }">
-            <a-form-item label="邮箱地址" name="email" :rules="[{ required: true, strigger: 'blur' }]">
+            <a-form-item label="邮箱地址" name="email" :rules="[{ required: true, validator: validEmail, strigger: 'blur' }]">
                 <a-input style="border-radius: 5px;" v-model:value="formState.email" />
             </a-form-item>
             <a-form-item label="密码" name="password"
@@ -40,8 +40,8 @@
                     </div>
                 </a-form-item>
                 <a-form-item label="标签" name="tag" :rules="[{ required: true, message: '请选择标签!' }]">
-                    <a-select v-model:value="addParams.tag" mode="multiple" style="width: 100%" placeholder="请选择"
-                        :options="tagList"></a-select>
+                    <a-select v-model:value="addParams.tag" :maxTagCount="3" mode="multiple" style="width: 100%"
+                        placeholder="请选择" :options="tagList"></a-select>
                 </a-form-item>
             </a-form>
             <template #footer>
@@ -53,7 +53,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { message } from "ant-design-vue"
 import { registerUser } from '@/api/login'
 import router from '@/router';
@@ -66,7 +66,6 @@ interface FormState {
 }
 
 const BaseImg: any = new URL("@/assets/img/touxiang.jpg", import.meta.url)
-
 const formRef = ref()
 const addParamsRef = ref()
 const loading = ref<boolean>(false)
@@ -81,7 +80,7 @@ const addParams = reactive({
     img: "",
     tag: [1]
 })
-const tagList = ref([])
+const tagList = ref<any>([])
 
 function validEmail(_: any, value: any): any {
     return new Promise((resolve, reject) => {
@@ -154,7 +153,8 @@ async function getTagListSelect() {
         tagList.value = res.data.rows.map((item: any) => {
             return {
                 label: item.name,
-                value: item.id
+                value: item.id,
+                disabled: false
             }
         })
     }
@@ -167,6 +167,23 @@ function goBack() {
 onMounted(() => {
     getTagListSelect()
 })
+
+watch(() => addParams.tag, (newValue, oldValue) => {
+    if (newValue.length >= 3) {
+        for (let i = 0; i < tagList.value.length; i++) {
+            if (newValue.findIndex((item: any) => item == tagList.value[i].value) == -1) {
+                tagList.value[i].disabled = true
+            } else {
+                tagList.value[i].disabled = false
+            }
+        }
+    } else {
+        for (let i = 0; i < tagList.value.length; i++) {
+            tagList.value[i].disabled = false
+        }
+    }
+})
+
 
 </script>
 

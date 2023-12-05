@@ -2,6 +2,7 @@ import BlankLayout from "@/layout/BlankLayout.vue"
 import Home from "@/views/home.vue"
 import TagManage from "@/views/system/tagManage.vue"
 import UserManage from "@/views/system/userManage.vue"
+import Chat from '../views/chat.vue'
 
 const newRouterData: any = [
   {
@@ -9,12 +10,23 @@ const newRouterData: any = [
     meta: {
       menuType: "menu",
       key: "home",
-      label: "交友平台",
+      label: "高校智能交友平台",
       icon: "HomeOutlined",
       isHome: true,
       isOk: false
     },
     component: Home
+  }, {
+    path: "/chat",
+    meta: {
+      menuType: "menu",
+      key: "chat",
+      label: "实时私聊",
+      icon: "HomeOutlined",
+      isAddPage: true,
+      isOk: false
+    },
+    component: Chat
   },
   {
     path: "system",

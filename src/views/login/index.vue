@@ -1,18 +1,18 @@
 <template>
     <div class="main">
-        <div class="header">
+        <!-- <div class="header">
             
-        </div>
+        </div> -->
         <div class="center">
             <div class="name">
-                <!-- <p class="cn">校园交友平台</p> -->
+                <p class="cn">高校智能交友平台</p>
             </div>
             <Login v-if="path === '/login'"></Login>
             <Register v-if="path === '/register'"></Register>
         </div>
-        <div class="flooter">
+        <!-- <div class="flooter">
             
-        </div>
+        </div> -->
     </div>
 </template>
 

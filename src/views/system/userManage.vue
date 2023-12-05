@@ -58,7 +58,7 @@
 
 <script lang="ts" setup>
 import { message, Table as aTable } from "ant-design-vue";
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, onUnmounted, reactive, ref } from "vue";
 import { formatDate, getUpdateParams, valueError } from "@/utils/fuc";
 import { getUserList, type AddTagType, type GetUserListType, addTag, editTag, deleteTag, type EditTagType, deleteUser } from "@/api/system";
 
@@ -178,8 +178,8 @@ async function handleOk() {
 }
 
 async function deleteOk(record: any) {
-    if(record.id === 1) {
-        message.error("管理员账号不可被删除！") 
+    if (record.id === 1) {
+        message.error("管理员账号不可被删除！")
         return false
     }
     const res = await deleteUser(record._id)
@@ -191,9 +191,24 @@ async function deleteOk(record: any) {
     }
 }
 
+const timer = ref<any>()
+
 onMounted(() => {
+    if (timer.value) {
+        clearInterval(timer.value)
+    }
     getList()
+    timer.value = setInterval(() => {
+        getList()
+    }, 3000)
 })
+
+onUnmounted(() => {
+    if (timer.value) {
+        clearInterval(timer.value)
+    }
+})
+
 
 </script>
 <style lang="less" scoped>
