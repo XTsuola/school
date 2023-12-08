@@ -65,6 +65,7 @@ import { editMessage, getInfoMsg, getMyFriendInfo, type GiveUpRelationType } fro
 import router from '@/router';
 import { inject, onMounted, ref } from 'vue';
 import { formatDate, appData } from '@/utils/fuc'
+import { message } from 'ant-design-vue';
 
 const socket: any = inject('socket')
 const ws = socket()
@@ -138,12 +139,15 @@ onMounted(() => {
     }, 500)
     ws.onmessage = ({ data }: any) => {
         const info = JSON.parse(data)
-        if (info.uid = "msgOk") {
+        if (info.uid == "msgOk") {
             infoData.value = info.data
             editMsg()
             setTimeout(() => {
                 myUlRef.value.scrollTop = 10000000
             }, 100)
+        } else if(info.uid == "msgError") {
+            message.error(info.data)
+            router.push("/home")
         }
     }
 })

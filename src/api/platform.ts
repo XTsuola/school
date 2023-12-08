@@ -1,14 +1,5 @@
 import request from "../utils/request"
 
-// 获取用户请求好友列表
-export function getAskList(id: any) {
-    return request({
-        url: '/getAskList/',
-        method: 'get',
-        params: { userId: id }
-    })
-}
-
 // 获取我的好友列表
 export function getMyFriendList(id: any) {
     return request({
@@ -98,5 +89,41 @@ export function editMessage(id: number, friendId: number) {
             id: id,
             friendId: friendId
         }
+    })
+}
+
+// 获取一个随机好友
+export function getRandomFriend(id: number | undefined) {
+    return request({
+        url: '/getRandomFriend/',
+        method: 'get',
+        params: { id: id }
+    })
+}
+
+// 获取一个相同兴趣好友
+export function getInterestFriend(id: number | undefined) {
+    return request({
+        url: '/getInterestFriend/',
+        method: 'get',
+        params: { id: id }
+    })
+}
+
+//根据账号获取用户
+export function getAccurateFriend(id: number | undefined, email: string) {
+    return request({
+        url: '/getAccurateFriend/',
+        method: 'get',
+        params: { id: id, email: email }
+    })
+}
+
+// 我的申请以及回复表
+export function getMyAskRequestList(id: number | undefined) {
+    return request({
+        url: '/getMyAskRequestList/',
+        method: 'get',
+        params: { id: id}
     })
 }

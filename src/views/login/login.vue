@@ -3,9 +3,10 @@
         <div class="card_name">
             <span><strong><b>密码登录</b></strong></span>
         </div>
-        <a-form style="width:100%" :model="formState" name="basic" :wrapper-col="{ span: 18, offset: 3 }" autocomplete="off"
+        <a-form style="width:100%;padding: 0 4vw 0 4vw;" :model="formState" name="basic" autocomplete="off"
             @finish="onFinish">
-            <a-form-item name="email" :rules="[{ required: true, message: '请输入邮箱账号！', trigger: 'blur' }]">
+            <a-form-item name="email"
+                :rules="[{ required: true, message: '请输入邮箱账号！', trigger: 'blur' }]">
                 <a-input style="border-radius: 5px;" v-model:value="formState.email" placeholder="账号">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
@@ -19,7 +20,7 @@
                     </template>
                 </a-input-password>
             </a-form-item>
-            <a-form-item :wrapper-col="{ span: 18, offset: 3 }" style="margin-bottom: 0;">
+            <a-form-item style="margin-bottom: 0;">
                 <a-button :loading="loading" style="width: 100%;border-radius: 5px;" type="primary"
                     html-type="submit">登录</a-button>
             </a-form-item>
