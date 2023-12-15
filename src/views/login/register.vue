@@ -28,7 +28,7 @@
         </a-form>
         <a-modal v-model:visible="visible" destroyOnClose title="用户信息" :maskClosable="false">
             <a-form ref="addParamsRef" :model="addParams" name="basic" :wrapper-col="{ span: 14, offset: 1 }"
-                autocomplete="off" @finish="onFinish" hideRequiredMark :label-col="{ span: 6 }">
+                autocomplete="off" @finish="onFinish" :label-col="{ span: 6 }">
                 <a-form-item label="用户名" name="username" :rules="[{ required: true, message: '请输入用户名!', trigger: 'blur' }]">
                     <a-input v-model:value="addParams.username" />
                 </a-form-item>
@@ -42,6 +42,9 @@
                 <a-form-item label="标签" name="tag" :rules="[{ required: true, message: '请选择标签!' }]">
                     <a-select v-model:value="addParams.tag" :maxTagCount="3" mode="multiple" style="width: 100%"
                         placeholder="请选择" :options="tagList"></a-select>
+                </a-form-item>
+                <a-form-item label="身份证号" name="idcard" :rules="[{ required: true, message: '请输入身份证号!', trigger: 'blur' }]">
+                    <a-input v-model:value="addParams.idcard" />
                 </a-form-item>
             </a-form>
             <template #footer>
@@ -78,7 +81,8 @@ const visible = ref(false)
 const addParams = reactive({
     username: "索灵",
     img: "",
-    tag: [1]
+    tag: [1],
+    idcard: "320123199712275017"
 })
 const tagList = ref<any>([])
 

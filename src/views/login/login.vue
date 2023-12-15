@@ -91,10 +91,16 @@ function validPassword(_: any, value: string): Promise<any> {
         if (!value) {
             reject(new Error('请输入密码!'));
         } else {
-            if (value.length >= 1 && value.length <= 20) {
-                resolve("");
+            if (value.length >= 6 && value.length <= 20) {
+                const reg = /^[0-9A-Za-z]+$/
+                if(reg.test(value)) {
+                    resolve("");
+                } else {
+                    reject(new Error('密码只能包含数字和字母!'));
+                }
+                
             } else {
-                reject(new Error('须在1 ~ 20个字符之间!'));
+                reject(new Error('须在6 ~ 20个字符之间!'));
             }
         }
     })

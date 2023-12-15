@@ -10,7 +10,7 @@ const newRouterData: any = [
     meta: {
       menuType: "menu",
       key: "home",
-      label: "高校智能交友平台",
+      label: "校园交友系统",
       icon: "HomeOutlined",
       isHome: true,
       isOk: false

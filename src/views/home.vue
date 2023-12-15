@@ -5,6 +5,8 @@
                 <div style="margin-bottom: 5px;">
                     <a-button @click="randomMatching()" style="margin-right: 10px;background: #87d068;border: #87d068;"
                         type="primary">随机匹配</a-button>
+                    <a-select style="width: 200px;margin-right: 2px;" v-model:value="tagId" :maxTagCount="3"
+                        :options="tagList"></a-select>
                     <a-button @click="interestMatching()" style="margin-right: 10px;background: orange;border: orange;"
                         type="primary">兴趣匹配</a-button>
                     <a-input v-model:value="email" style="width: 200px;margin-right: 2px;" />
@@ -105,10 +107,17 @@
         <a-modal v-model:visible="visible" destroyOnClose title="用户详情" :maskClosable="false">
             <a-form style="width: 100%;" :model="detailData" name="basic" :label-col="{ span: 4 }" autocomplete="off">
                 <a-form-item label="账号">
-                    <a-input readonly v-model:value="detailData.email"></a-input>
+                    <span>{{ detailData.email }}</span>
                 </a-form-item>
                 <a-form-item label="用户名">
-                    <a-input readonly v-model:value="detailData.username" placeholder="请输入"></a-input>
+                    <span>{{ detailData.username }}</span>
+                </a-form-item>
+                <a-form-item label="生日">
+                    <span>{{ getBirthday(detailData.birthday) }}</span>
+                    <a-tag
+                        v-if="(parseInt(detailData.birthday) > (nowYear - 26) * 10000) && parseInt(detailData.birthday) < (nowYear - 17) * 10000"
+                        style="width: 80px;text-align: center;margin-left: 10px;padding:1px;color: #ffffff;"
+                        color="#87d068">大学生</a-tag>
                 </a-form-item>
                 <a-form-item label="头像">
                     <div style="position: relative;width: 36px; height: 36px; border-radius: 50%; overflow: hidden;">
@@ -123,7 +132,7 @@
                             item.name }}</a-tag>
                 </a-form-item>
                 <a-form-item v-if="testInfo" label="验证信息">
-                    <a-textarea readonly v-model:value="testInfo" />
+                    <span>{{ testInfo }}</span>
                 </a-form-item>
 
             </a-form>
@@ -152,6 +161,7 @@ import { message, Table as aTable } from "ant-design-vue";
 import { onMounted, ref, onUnmounted, inject, reactive } from "vue";
 import { getMyFriendList, deleteMyFriend, giveUpRelation, approvalFriends, createRelation, type CreateRelationType, type DeleteMyFriendType, type GiveUpRelationType, type ApprovalFriendsType, getRandomFriend, getInterestFriend, getAccurateFriend, getMyAskRequestList } from "@/api/platform";
 import router from "@/router";
+import { getTagList } from "@/api/system";
 
 const BaseImg: any = new URL("@/assets/img/touxiang.jpg", import.meta.url)
 const baseUrl = import.meta.env.VITE_APP_BASE_URL + 'headImg/'
@@ -252,7 +262,8 @@ const detailData = reactive<any>({
     username: "",
     tagObj: [],
     img: "",
-    email: ""
+    email: "",
+    birthday: ""
 })
 const addFriendData = reactive<any>({
     id: undefined,
@@ -261,6 +272,22 @@ const addFriendData = reactive<any>({
 const email = ref("")
 const imgData1 = ref<any>([])
 const imgData2 = ref<any>([])
+const nowYear: number = parseInt(new Date().getFullYear() as any)
+const tagList = ref<any>([])
+const tagId = ref()
+
+async function getTagListSelect() {
+    const res = await getTagList({})
+    if (res.data.code === 200) {
+        tagList.value = res.data.rows.map((item: any) => {
+            return {
+                label: item.name,
+                value: item.id,
+                disabled: false
+            }
+        })
+    }
+}
 
 function getList() {
     tableData.value = []
@@ -349,7 +376,15 @@ async function noFirends(friendId: any) {
     nowId1.value = 0
 }
 
+function getBirthday(birthday: string): string {
+    const year = birthday.slice(0, 4) + "年"
+    const month = birthday.slice(4, 6) + "月"
+    const day = birthday.slice(6, 8) + "日"
+    return year + month + day
+}
+
 function openDetail(record: any, info?: string) {
+    console.log(record, "mmmms")
     visible.value = true
     if (info) {
         testInfo.value = info
@@ -361,6 +396,7 @@ function openDetail(record: any, info?: string) {
     detailData.img = baseUrl + record.img
     detailData.email = record.email
     detailData.tagObj = record.tagObj
+    detailData.birthday = record.birthday
 }
 
 async function randomMatching() {
@@ -380,7 +416,7 @@ async function randomMatching() {
 
 async function interestMatching() {
     try {
-        const res = await getInterestFriend(parseInt(id as string))
+        const res = await getInterestFriend(parseInt(id as string), tagId.value)
         if (res.data.code === 200) {
             for (let i = 1; i <= res.data.rows.length; i++) {
                 res.data.rows[i - 1].no = i
@@ -412,6 +448,7 @@ async function emailSearch() {
 
 function reset() {
     email.value = ""
+    tagId.value = undefined
     getList()
 }
 
@@ -442,6 +479,7 @@ onMounted(() => {
         }
     }, 500)
     getList()
+    getTagListSelect()
     updateListAll()
     ws.onmessage = ({ data }: any) => {
 

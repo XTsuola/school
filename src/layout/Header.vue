@@ -22,6 +22,9 @@
                 <a-form-item label="账号">
                     <a-input disabled v-model:value="detailData.email"></a-input>
                 </a-form-item>
+                <a-form-item label="生日">
+                    <a-input disabled v-model:value="detailData.birthday"></a-input>
+                </a-form-item>
                 <a-form-item label="用户名" name="username" :rules="[{ required: true, message: '请输入用户名!' }]">
                     <a-input v-model:value="detailData.username" placeholder="请输入"></a-input>
                 </a-form-item>
@@ -84,6 +87,7 @@ const visible = ref(false)
 const detailData = reactive({
     id: parseInt(id as string),
     username: "",
+    birthday: "",
     tag: [],
     tagObj: [],
     img: "",
@@ -96,11 +100,18 @@ const loading = ref(false)
 const userInfoRef = ref()
 const tagList = ref<any>([])
 
+function getBirthday(birthday: string): string {
+    const year = birthday.slice(0,4) + "年"
+    const month = birthday.slice(4,6) + "月"
+    const day = birthday.slice(6,8) + "日"
+    return year + month + day
+}
+
 async function showInfo() {
     getTagListSelect()
     visible.value = true
     detailData.flag = false
-    detailData.username = detailData.img = detailData.email = ""
+    detailData.username = detailData.img = detailData.email = detailData.birthday = ""
     detailData.tagObj = []
     const res = await getUserDetail(id ? parseInt(id) : 0)
     if (res.data.code === 200) {
@@ -110,6 +121,7 @@ async function showInfo() {
         detailData.email = res.data.rows.email
         detailData.tagObj = res.data.rows.tagObj
         detailData.tag = res.data.rows.tag
+        detailData.birthday = getBirthday(res.data.rows.birthday)
     }
 }
 

@@ -102,11 +102,11 @@ export function getRandomFriend(id: number | undefined) {
 }
 
 // 获取一个相同兴趣好友
-export function getInterestFriend(id: number | undefined) {
+export function getInterestFriend(id: number | undefined, tagId: number | undefined) {
     return request({
         url: '/getInterestFriend/',
         method: 'get',
-        params: { id: id }
+        params: { id: id, tagId: tagId }
     })
 }
 
@@ -124,6 +124,6 @@ export function getMyAskRequestList(id: number | undefined) {
     return request({
         url: '/getMyAskRequestList/',
         method: 'get',
-        params: { id: id}
+        params: { id: id }
     })
 }

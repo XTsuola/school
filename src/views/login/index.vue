@@ -5,7 +5,7 @@
         </div> -->
         <div class="center">
             <div class="name">
-                <p class="cn">高校智能交友平台</p>
+                <p class="cn">校园交友系统</p>
             </div>
             <Login v-if="path === '/login'"></Login>
             <Register v-if="path === '/register'"></Register>
