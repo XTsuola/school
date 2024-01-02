@@ -118,8 +118,8 @@ function validConfPassword(_: any, value: string): Promise<any> {
 async function handleOk() {
     await addParamsRef.value?.validate()
     const params = { ...formState, ...addParams }
-    const res = await registerUser(params)
     try {
+        const res = await registerUser(params)
         if (res.data.code === 200) {
             visible.value = false
             router.go(-1)

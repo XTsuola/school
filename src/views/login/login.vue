@@ -5,8 +5,7 @@
         </div>
         <a-form style="width:100%;padding: 0 4vw 0 4vw;" :model="formState" name="basic" autocomplete="off"
             @finish="onFinish">
-            <a-form-item name="email"
-                :rules="[{ required: true, message: '请输入邮箱账号！', trigger: 'blur' }]">
+            <a-form-item name="email" :rules="[{ required: true, message: '请输入邮箱账号！', trigger: 'blur' }]">
                 <a-input style="border-radius: 5px;" v-model:value="formState.email" placeholder="账号">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
@@ -62,27 +61,32 @@ async function onFinish(values: FormState) {
         email: values.email,
         password: values.password
     }
-    const res = await login(params)
-    if (res) {
-        if (res.data.code === 200) {
-            sessionStorage.setItem("token", res.data.data.token)
-            sessionStorage.setItem("userId", res.data.data.id)
-            sessionStorage.setItem("img", res.data.data.img)
-            sessionStorage.setItem("username", res.data.data.username)
-            const list = getMenuData(res.data.data.id, JSON.parse(JSON.stringify(routerData)))
-            menuStore.updateList(list)
-            sessionStorage.setItem("routerList", JSON.stringify(list))
-            message.success(res.data.msg)
-            let msg = {
-                code: 'login',
-                id: res.data.data.id
+    try {
+        const res = await login(params)
+        if (res) {
+            console.log(1111)
+            if (res.data.code === 200) {
+                console.log(2222)
+                console.log(res.data.data)
+                sessionStorage.setItem("token", res.data.data.token)
+                sessionStorage.setItem("userId", res.data.data.id)
+                sessionStorage.setItem("img", res.data.data.img)
+                sessionStorage.setItem("username", res.data.data.username)
+                const list = getMenuData(res.data.data.id, JSON.parse(JSON.stringify(routerData)))
+                menuStore.updateList(list)
+                sessionStorage.setItem("routerList", JSON.stringify(list))
+                /* message.success(res.data.msg)
+                let msg = {
+                    code: 'login',
+                    id: res.data.data.id
+                }
+                ws.send(JSON.stringify(msg)) */
+                router.push("/home")
+            } else {
+                message.error(res.data.msg)
             }
-            ws.send(JSON.stringify(msg))
-            router.push("/home")
-        } else {
-            message.error(res.data.msg)
         }
-    }
+    } catch (_) { }
     loading.value = false
 }
 
@@ -93,12 +97,12 @@ function validPassword(_: any, value: string): Promise<any> {
         } else {
             if (value.length >= 6 && value.length <= 20) {
                 const reg = /^[0-9A-Za-z]+$/
-                if(reg.test(value)) {
+                if (reg.test(value)) {
                     resolve("");
                 } else {
                     reject(new Error('密码只能包含数字和字母!'));
                 }
-                
+
             } else {
                 reject(new Error('须在6 ~ 20个字符之间!'));
             }

@@ -3,13 +3,13 @@
         <div style="display: flex;justify-content: space-between;overflow: hidden;width: 100%;">
             <div style="width: calc(100% - 380px);border: 2px solid #ccc;border-radius: 10px;padding: 10px;">
                 <div style="margin-bottom: 5px;">
-                    <a-button @click="randomMatching()" style="margin-right: 10px;background: #87d068;border: #87d068;"
+                    <a-button @click="randomMatching()" style="margin-right: 15px;background: #87d068;border: #87d068;"
                         type="primary">随机匹配</a-button>
                     <a-select style="width: 200px;margin-right: 2px;" v-model:value="tagId" :maxTagCount="3"
-                        :options="tagList"></a-select>
-                    <a-button @click="interestMatching()" style="margin-right: 10px;background: orange;border: orange;"
+                        :options="tagList" placeholder="请选择..."></a-select>
+                    <a-button @click="interestMatching()" style="margin-right: 15px;background: orange;border: orange;"
                         type="primary">兴趣匹配</a-button>
-                    <a-input v-model:value="email" style="width: 200px;margin-right: 2px;" />
+                    <a-input v-model:value="email" style="width: 200px;margin-right: 2px;" placeholder="请输入..." />
                     <a-button type="primary" style="margin-right: 10px;" @click="emailSearch">账号搜索</a-button>
                     <a-button @click="reset">清空</a-button>
                 </div>
@@ -415,6 +415,9 @@ async function randomMatching() {
 }
 
 async function interestMatching() {
+    if (!tagId.value) {
+        return false
+    }
     try {
         const res = await getInterestFriend(parseInt(id as string), tagId.value)
         if (res.data.code === 200) {

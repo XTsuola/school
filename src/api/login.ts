@@ -3,7 +3,7 @@ import request from "../utils/request"
 // 注册
 export function registerUser(data: any) {
     return request({
-        url: '/register_user/',
+        url: '/register_user',
         method: 'post',
         data: data
     })
@@ -16,7 +16,7 @@ export interface LoginParams {
 }
 export function login(data: LoginParams) {
     return request({
-        url: '/login/',
+        url: '/login',
         method: 'post',
         data: data
     })
@@ -25,7 +25,7 @@ export function login(data: LoginParams) {
 // 修改密码
 export function updatePassword(data: any) {
     return request({
-        url: '/user/modify_password/',
+        url: '/user/modify_password',
         method: 'post',
         data: data
     })
