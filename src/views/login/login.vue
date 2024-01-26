@@ -64,10 +64,7 @@ async function onFinish(values: FormState) {
     try {
         const res = await login(params)
         if (res) {
-            console.log(1111)
             if (res.data.code === 200) {
-                console.log(2222)
-                console.log(res.data.data)
                 sessionStorage.setItem("token", res.data.data.token)
                 sessionStorage.setItem("userId", res.data.data.id)
                 sessionStorage.setItem("img", res.data.data.img)
@@ -75,13 +72,8 @@ async function onFinish(values: FormState) {
                 const list = getMenuData(res.data.data.id, JSON.parse(JSON.stringify(routerData)))
                 menuStore.updateList(list)
                 sessionStorage.setItem("routerList", JSON.stringify(list))
-                /* message.success(res.data.msg)
-                let msg = {
-                    code: 'login',
-                    id: res.data.data.id
-                }
-                ws.send(JSON.stringify(msg)) */
                 router.push("/home")
+                location.reload()
             } else {
                 message.error(res.data.msg)
             }

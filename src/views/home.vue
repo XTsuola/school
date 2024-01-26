@@ -3,8 +3,8 @@
         <div style="display: flex;justify-content: space-between;overflow: hidden;width: 100%;">
             <div style="width: calc(100% - 380px);border: 2px solid #ccc;border-radius: 10px;padding: 10px;">
                 <div style="margin-bottom: 5px;">
-                    <a-button @click="randomMatching()" style="margin-right: 15px;background: #87d068;border: #87d068;"
-                        type="primary">随机匹配</a-button>
+                    <!-- <a-button @click="randomMatching()" style="margin-right: 15px;background: #87d068;border: #87d068;"
+                        type="primary">随机匹配</a-button> -->
                     <a-select style="width: 200px;margin-right: 2px;" v-model:value="tagId" :maxTagCount="3"
                         :options="tagList" placeholder="请选择..."></a-select>
                     <a-button @click="interestMatching()" style="margin-right: 15px;background: orange;border: orange;"
@@ -161,10 +161,10 @@ import { message, Table as aTable } from "ant-design-vue";
 import { onMounted, ref, onUnmounted, inject, reactive } from "vue";
 import { getMyFriendList, deleteMyFriend, giveUpRelation, approvalFriends, createRelation, type CreateRelationType, type DeleteMyFriendType, type GiveUpRelationType, type ApprovalFriendsType, getRandomFriend, getInterestFriend, getAccurateFriend, getMyAskRequestList } from "@/api/platform";
 import router from "@/router";
-import { getTagList } from "@/api/system";
+import { getTagSelect } from "@/api/system";
 
 const BaseImg: any = new URL("@/assets/img/touxiang.jpg", import.meta.url)
-const baseUrl = import.meta.env.VITE_APP_BASE_URL + 'headImg/'
+const baseUrl = import.meta.env.VITE_APP_BASE_URL + 'upload/'
 const socket: any = inject('socket')
 const ws = socket()
 const id = sessionStorage.getItem("userId") ? sessionStorage.getItem("userId") : ""
@@ -277,9 +277,9 @@ const tagList = ref<any>([])
 const tagId = ref()
 
 async function getTagListSelect() {
-    const res = await getTagList({})
+    const res = await getTagSelect()
     if (res.data.code === 200) {
-        tagList.value = res.data.rows.map((item: any) => {
+        tagList.value = res.data.data.map((item: any) => {
             return {
                 label: item.name,
                 value: item.id,
@@ -297,8 +297,8 @@ async function getList2() {
     try {
         const res = await getMyAskRequestList(parseInt(id as string))
         if (res.data.code === 200) {
-            imgData1.value = res.data.data1.reverse()
-            imgData2.value = res.data.data2.reverse()
+            imgData1.value = res.data.data.data1.reverse()
+            imgData2.value = res.data.data.data2.reverse()
         }
     } catch (_) { }
 }
@@ -307,11 +307,11 @@ async function getList3() {
     try {
         const res = await getMyFriendList(parseInt(id as string))
         if (res.data.code === 200) {
-            for (let i = 1; i <= res.data.rows.length; i++) {
-                res.data.rows[i - 1].no = i
-                res.data.rows[i - 1].imgUrl = baseUrl + res.data.rows[i - 1].img
+            for (let i = 1; i <= res.data.data.length; i++) {
+                res.data.data[i - 1].no = i
+                res.data.data[i - 1].imgUrl = baseUrl + res.data.data[i - 1].img
             }
-            tableData2.value = res.data.rows
+            tableData2.value = res.data.data
         }
     } catch (_) { }
 }
@@ -340,7 +340,7 @@ async function addFirends() {
         const res = await approvalFriends(params)
         if (res.data.code === 200) {
             visible2.value = false
-            getList()
+            reset()
             getList2()
             getList3()
         }
@@ -384,7 +384,6 @@ function getBirthday(birthday: string): string {
 }
 
 function openDetail(record: any, info?: string) {
-    console.log(record, "mmmms")
     visible.value = true
     if (info) {
         testInfo.value = info
@@ -421,10 +420,10 @@ async function interestMatching() {
     try {
         const res = await getInterestFriend(parseInt(id as string), tagId.value)
         if (res.data.code === 200) {
-            for (let i = 1; i <= res.data.rows.length; i++) {
-                res.data.rows[i - 1].no = i
+            for (let i = 1; i <= res.data.data.length; i++) {
+                res.data.data[i - 1].no = i
             }
-            tableData.value = res.data.rows
+            tableData.value = res.data.data
             if (tableData.value.length == 0) {
                 message.error("暂无可匹配好友！")
             }
@@ -439,10 +438,10 @@ async function emailSearch() {
     try {
         const res = await getAccurateFriend(parseInt(id as string), email.value)
         if (res.data.code === 200) {
-            for (let i = 1; i <= res.data.rows.length; i++) {
-                res.data.rows[i - 1].no = i
+            for (let i = 1; i <= res.data.data.length; i++) {
+                res.data.data[i - 1].no = i
             }
-            tableData.value = res.data.rows
+            tableData.value = res.data.data
         } else if (res.data.code === 500) {
             message.error(res.data.msg)
         }

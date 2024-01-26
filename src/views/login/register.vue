@@ -60,7 +60,7 @@ import { onMounted, reactive, ref, watch } from 'vue';
 import { message } from "ant-design-vue"
 import { registerUser } from '@/api/login'
 import router from '@/router';
-import { getTagList } from '@/api/system';
+import { getTagList, getTagSelect } from '@/api/system';
 
 interface FormState {
     email: string
@@ -81,7 +81,7 @@ const visible = ref(false)
 const addParams = reactive({
     username: "索灵",
     img: "",
-    tag: [1],
+    tag: [],
     idcard: "320123199712275017"
 })
 const tagList = ref<any>([])
@@ -152,9 +152,10 @@ function getImg(e: Event) {
 }
 
 async function getTagListSelect() {
-    const res = await getTagList({})
+    const res = await getTagSelect()
     if (res.data.code === 200) {
-        tagList.value = res.data.rows.map((item: any) => {
+        console.log(res.data, )
+        tagList.value = res.data.data.map((item: any) => {
             return {
                 label: item.name,
                 value: item.id,

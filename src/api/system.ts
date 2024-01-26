@@ -9,7 +9,7 @@ export interface GetUserListType {
 }
 export function getUserList(data: GetUserListType) {
     return request({
-        url: '/getUserList/',
+        url: '/user',
         method: 'get',
         params: data
     })
@@ -18,9 +18,8 @@ export function getUserList(data: GetUserListType) {
 // 获取用户详情
 export function getUserDetail(id: number) {
     return request({
-        url: '/getUserDetail/',
-        method: 'get',
-        params: { id: id }
+        url: '/user/' + id,
+        method: 'get'
     })
 }
 
@@ -30,12 +29,12 @@ export interface EditUserType {
     username: string
     img?: any
     tag: number[]
-    password?: string
+    password?: string | null
 }
 export function editUser(data: EditUserType) {
     return request({
-        url: '/editUser',
-        method: 'post',
+        url: '/user',
+        method: 'put',
         data: data
     })
 }
@@ -43,8 +42,8 @@ export function editUser(data: EditUserType) {
 // 删除用户
 export function deleteUser(id: string) {
     return request({
-        url: '/deleteUser?_id=' + id,
-        method: 'get'
+        url: '/user/' + id,
+        method: 'delete'
     })
 }
 
@@ -56,7 +55,7 @@ export interface GetTagListType {
 }
 export function getTagList(data: GetTagListType) {
     return request({
-        url: '/getTagList/',
+        url: '/tag',
         method: 'get',
         params: data
     })
@@ -69,7 +68,7 @@ export interface AddTagType {
 }
 export function addTag(data: AddTagType) {
     return request({
-        url: '/addTag',
+        url: '/tag',
         method: 'post',
         data: data
     })
@@ -82,8 +81,8 @@ export interface EditTagType extends AddTagType {
 }
 export function editTag(data: EditTagType) {
     return request({
-        url: '/editTag',
-        method: 'post',
+        url: '/tag',
+        method: 'put',
         data: data
     })
 }
@@ -91,7 +90,15 @@ export function editTag(data: EditTagType) {
 // 删除标签
 export function deleteTag(id: string) {
     return request({
-        url: '/deleteTag?_id=' + id,
+        url: '/tag/' + id,
+        method: 'delete'
+    })
+}
+
+// 获取标签下拉框
+export function getTagSelect() {
+    return request({
+        url: '/tagSelect',
         method: 'get'
     })
 }

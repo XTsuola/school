@@ -70,14 +70,14 @@
 import { useMenuStore } from '@/store/menu'
 import router from '@/router';
 import { inject, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
-import { getTagList, getUserDetail, type EditUserType, editUser } from '@/api/system';
+import { getTagList, getUserDetail, type EditUserType, editUser, getTagSelect } from '@/api/system';
 import { message } from 'ant-design-vue';
 
 const socket: any = inject('socket')
 const ws = socket()
 const BaseImg: any = new URL("@/assets/img/touxiang.jpg", import.meta.url)
 const imgValue = ref()
-imgValue.value = import.meta.env.VITE_APP_BASE_URL + 'headImg/' + sessionStorage.getItem('img')
+imgValue.value = import.meta.env.VITE_APP_BASE_URL + 'upload/' + sessionStorage.getItem('img')
 const menuStore = useMenuStore()
 const username = ref("")
 const name = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : ""
@@ -115,13 +115,14 @@ async function showInfo() {
     detailData.tagObj = []
     const res = await getUserDetail(id ? parseInt(id) : 0)
     if (res.data.code === 200) {
-        detailData.id = res.data.rows.id
-        detailData.username = res.data.rows.username
-        detailData.img = import.meta.env.VITE_APP_BASE_URL + 'headImg/' + res.data.rows.img
-        detailData.email = res.data.rows.email
-        detailData.tagObj = res.data.rows.tagObj
-        detailData.tag = res.data.rows.tag
-        detailData.birthday = getBirthday(res.data.rows.birthday)
+        console.log(res.data.data)
+        detailData.id = res.data.data.id
+        detailData.username = res.data.data.username
+        detailData.img = import.meta.env.VITE_APP_BASE_URL + 'upload/' + res.data.data.img
+        detailData.email = res.data.data.email
+        detailData.tagObj = res.data.data.tagObj
+        detailData.tag = JSON.parse(res.data.data.tag)
+        detailData.birthday = getBirthday(res.data.data.birthday)
     }
 }
 
@@ -135,17 +136,22 @@ async function handleOk() {
     }
     if (reg.test(detailData.img)) {
         params.img = detailData.img
+    } else {
+        params.img = null
     }
     if (detailData.flag) {
         params.password = detailData.password
+    } else {
+        params.password = null
     }
     const res = await editUser(params)
     if (res.data.code === 200) {
         visible.value = false
         const res2 = await getUserDetail(detailData.id)
         if (res2.data.code == 200) {
-            sessionStorage.setItem("username", res2.data.rows.username)
-            sessionStorage.setItem("img", res2.data.rows.img)
+            console.log(res2.data.data, "mmm")
+            sessionStorage.setItem("username", res2.data.data.username)
+            sessionStorage.setItem("img", res2.data.data.img)
             if (params.password) {
                 message.error("您修改了密码，请重新登录！")
                 sessionStorage.clear()
@@ -188,9 +194,9 @@ function validConfPassword(_: any, value: string): Promise<any> {
 }
 
 async function getTagListSelect() {
-    const res = await getTagList({})
+    const res = await getTagSelect()
     if (res.data.code === 200) {
-        tagList.value = res.data.rows.map((item: any) => {
+        tagList.value = res.data.data.map((item: any) => {
             return {
                 label: item.name,
                 value: item.id,
@@ -215,17 +221,17 @@ function exit() {
 
 let timer: any = null
 
-onMounted(() => {
+/* onMounted(() => {
     if (!timer) {
         timer = setInterval(() => {
             ws.send(JSON.stringify({
                 code: 'status',
                 id: id,
-                online: true
+                online: 1
             }))
         }, 3000)
     }
-})
+}) */
 
 onUnmounted(() => {
     clearInterval(timer)

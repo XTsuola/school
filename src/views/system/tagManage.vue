@@ -112,12 +112,13 @@ async function getList() {
     }
     try {
         const res = await getTagList(params)
+        console.log(res.data, "ppp")
         if (res.data.code === 200) {
-            total.value = res.data.total
-            for (let i = 1; i <= res.data.rows.length; i++) {
-                res.data.rows[i - 1].no = (currentPage.value - 1) * pageSize.value + i
+            total.value = res.data.data.total
+            for (let i = 1; i <= res.data.data.rows.length; i++) {
+                res.data.data.rows[i - 1].no = (currentPage.value - 1) * pageSize.value + i
             }
-            tableData.value = res.data.rows
+            tableData.value = res.data.data.rows
         }
     } catch (_) { }
 
@@ -161,12 +162,12 @@ async function handleOk() {
                 color: addData.color
             }
             const res = await addTag(params)
-            if (res.status === 200) {
+            if (res.data.code === 200) {
                 message.success("新增成功")
                 visible.value = false
                 getList()
             } else {
-                message.error("操作失败")
+                message.error(res.data.msg)
             }
         } catch (_) { }
     } else if (title.value === "修改标签") {
@@ -179,7 +180,7 @@ async function handleOk() {
                 color: addData.color
             }
             const res = await editTag(params)
-            if (res.status === 200) {
+            if (res.data.code === 200) {
                 message.success("修改成功")
                 visible.value = false
                 getList()
@@ -192,8 +193,8 @@ async function handleOk() {
 }
 
 async function deleteOk(record: any) {
-    const res = await deleteTag(record._id)
-    if (res.status === 200) {
+    const res = await deleteTag(record.id)
+    if (res.data.code === 200) {
         message.success("删除成功")
         getList()
     } else {

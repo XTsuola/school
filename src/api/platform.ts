@@ -3,7 +3,7 @@ import request from "../utils/request"
 // 获取我的好友列表
 export function getMyFriendList(id: any) {
     return request({
-        url: '/getMyFriendList/',
+        url: '/getMyFriendList',
         method: 'get',
         params: { userId: id }
     })
@@ -16,13 +16,13 @@ export interface DeleteMyFriendType {
 }
 export function deleteMyFriend(data: DeleteMyFriendType) {
     return request({
-        url: '/deleteMyFriend/',
+        url: '/deleteMyFriend',
         method: 'get',
         params: data
     })
 }
 
-// 新增好有申请
+// 新增好友申请
 export interface ApprovalFriendsType {
     id: number
     friendId: number
@@ -36,7 +36,7 @@ export function approvalFriends(data: ApprovalFriendsType) {
     })
 }
 
-// 创建好有关系
+// 创建好友关系
 export interface CreateRelationType {
     id: number
     friendId: number
@@ -49,7 +49,7 @@ export function createRelation(data: CreateRelationType) {
     })
 }
 
-// 创建好有关系
+// 拒绝好友关系
 export interface GiveUpRelationType {
     id: number
     friendId: number
@@ -65,7 +65,7 @@ export function giveUpRelation(data: GiveUpRelationType) {
 // 获取我的好友列表
 export function getInfoMsg(data: GiveUpRelationType) {
     return request({
-        url: '/getInfoMsg/',
+        url: '/getInfoMsg',
         method: 'get',
         params: data
     })
@@ -74,7 +74,7 @@ export function getInfoMsg(data: GiveUpRelationType) {
 // 获取我的好友信息
 export function getMyFriendInfo(id: number | undefined) {
     return request({
-        url: '/getMyFriendInfo/',
+        url: '/getMyFriendInfo',
         method: 'get',
         params: { id: id }
     })
@@ -95,7 +95,7 @@ export function editMessage(id: number, friendId: number) {
 // 获取一个随机好友
 export function getRandomFriend(id: number | undefined) {
     return request({
-        url: '/getRandomFriend/',
+        url: '/getRandomFriend',
         method: 'get',
         params: { id: id }
     })
@@ -104,7 +104,7 @@ export function getRandomFriend(id: number | undefined) {
 // 获取一个相同兴趣好友
 export function getInterestFriend(id: number | undefined, tagId: number | undefined) {
     return request({
-        url: '/getInterestFriend/',
+        url: '/getInterestFriend',
         method: 'get',
         params: { id: id, tagId: tagId }
     })
@@ -113,7 +113,7 @@ export function getInterestFriend(id: number | undefined, tagId: number | undefi
 //根据账号获取用户
 export function getAccurateFriend(id: number | undefined, email: string) {
     return request({
-        url: '/getAccurateFriend/',
+        url: '/getAccurateFriend',
         method: 'get',
         params: { id: id, email: email }
     })
@@ -122,7 +122,7 @@ export function getAccurateFriend(id: number | undefined, email: string) {
 // 我的申请以及回复表
 export function getMyAskRequestList(id: number | undefined) {
     return request({
-        url: '/getMyAskRequestList/',
+        url: '/getMyAskRequestList',
         method: 'get',
         params: { id: id }
     })

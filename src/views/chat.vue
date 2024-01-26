@@ -2,15 +2,15 @@
     <div class="chat">
         <ul ref="myUlRef">
             <li v-for="item in infoData">
-                <div v-if="item.id == id" class="myMsg">
+                <div v-if="item.send_id == id" class="myMsg">
                     <div class="title">{{ username + "-" + formatDate(item.time) }}</div>
                     <div class="msg">{{ item.msg }}</div>
-                    <img :src="item.id == id ? myImg : friendImg" />
+                    <img :src="item.send_id == id ? myImg : friendImg" />
                 </div>
                 <div v-else class="friendMsg">
                     <div class="title">{{ friendName + "-" + formatDate(item.time) }}</div>
                     <div class="msg">{{ item.msg }}</div>
-                    <img :src="item.id == id ? myImg : friendImg" />
+                    <img :src="item.send_id == id ? myImg : friendImg" />
 
                 </div>
             </li>
@@ -72,7 +72,7 @@ const ws = socket()
 const id = sessionStorage.getItem("userId") ? sessionStorage.getItem("userId") : ""
 const username = sessionStorage.getItem("username") ? sessionStorage.getItem("username") : ""
 const friendId = sessionStorage.getItem("friendId") ? sessionStorage.getItem("friendId") : ""
-const myImg = import.meta.env.VITE_APP_BASE_URL + 'headImg/' + sessionStorage.getItem('img')
+const myImg = import.meta.env.VITE_APP_BASE_URL + 'upload/' + sessionStorage.getItem('img')
 const friendName = ref("")
 const txt = ref("")
 const infoData = ref<any>([])
@@ -99,8 +99,9 @@ async function getInfoList() {
         friendId: friendId ? parseInt(friendId) : 0,
     }
     const res = await getInfoMsg(params)
+    console.log(res.data)
     if (res.data.code == 200) {
-        infoData.value = res.data.rows.info
+        infoData.value = res.data.data
         setTimeout(() => {
             myUlRef.value.scrollTop = 1000000
         }, 100)
@@ -110,13 +111,17 @@ async function getInfoList() {
 async function getMyFriend() {
     const res = await getMyFriendInfo(parseInt(friendId as string))
     if (res.data.code == 200) {
-        friendName.value = res.data.rows.username
-        friendImg.value = import.meta.env.VITE_APP_BASE_URL + 'headImg/' + res.data.rows.img
+        friendName.value = res.data.data.username
+        friendImg.value = import.meta.env.VITE_APP_BASE_URL + 'upload/' + res.data.data.img
     }
 }
 
 async function editMsg() {
-    await editMessage(parseInt(id as string), parseInt(friendId as string))
+    const res = await editMessage(parseInt(id as string), parseInt(friendId as string))
+    if (res.data.code == 500) {
+        message.error(res.data.msg)
+        router.push("/home")
+    }
 }
 
 function goBack() {
@@ -139,14 +144,17 @@ onMounted(() => {
     }, 500)
     ws.onmessage = ({ data }: any) => {
         const info = JSON.parse(data)
-        if (info.uid == "msgOk") {
+        if (info.uid == "on") {
+            console.log("连接成功")
+        }
+        else if (info.uid == "msgOk") {
             infoData.value = info.data
             editMsg()
             setTimeout(() => {
                 myUlRef.value.scrollTop = 10000000
             }, 100)
-        } else if(info.uid == "msgError") {
-            message.error(info.data)
+        } else if (info.uid == "msgErr") {
+            message.error("对方已经不是你好友")
             router.push("/home")
         }
     }

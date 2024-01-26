@@ -20,16 +20,12 @@
                 </template>
                 <template v-if="column.key === 'online'">
                     <a-tag style="min-width: 80px;margin-left: 2px;padding:1px;color: #ffffff;"
-                        :color="record.online == true ? '#87d068' : '#F44336'">{{ record.online == true ? "在线" : "离线"
+                        :color="record.online == 1 ? '#87d068' : '#F44336'">{{ record.online == 1 ? "在线" : "离线"
                         }}</a-tag>
                 </template>
                 <template v-if="column.key === 'action'">
                     <span
                         style="display: flex;justify-content: center;flex-wrap: nowrap;white-space: nowrap;align-items: center;">
-                        <!-- <span style="cursor: pointer;" @click="showModal(2, record)">
-                            <a-button type="link" size="small">修改</a-button>
-                        </span>
-                        <a-divider type="vertical" /> -->
                         <a-popconfirm title="确定删除该数据吗?" ok-text="确定" cancel-text="取消" @confirm="deleteOk(record)">
                             <a-button type="link" danger size="small">删除</a-button>
                         </a-popconfirm>
@@ -60,7 +56,7 @@
 import { message, Table as aTable } from "ant-design-vue";
 import { onMounted, onUnmounted, reactive, ref } from "vue";
 import { formatDate, getUpdateParams, valueError } from "@/utils/fuc";
-import { getUserList, type AddTagType, type GetUserListType, addTag, editTag, deleteTag, type EditTagType, deleteUser } from "@/api/system";
+import { getUserList, type GetUserListType, type EditTagType, deleteUser } from "@/api/system";
 
 const currentPage = ref(1)
 const pageSize = ref(15)
@@ -134,12 +130,13 @@ async function getList() {
     try {
         const res = await getUserList(params)
         if (res.data.code === 200) {
-            total.value = res.data.total
-            for (let i = 1; i <= res.data.rows.length; i++) {
-                res.data.rows[i - 1].no = (currentPage.value - 1) * pageSize.value + i
+            total.value = res.data.data.total
+            for (let i = 1; i <= res.data.data.rows.length; i++) {
+                res.data.data.rows[i - 1].no = (currentPage.value - 1) * pageSize.value + i
             }
-            tableData.value = res.data.rows
+            tableData.value = res.data.data.rows
         }
+        
     } catch (_) { }
 
     tableLoading.value = false
@@ -182,7 +179,7 @@ async function deleteOk(record: any) {
         message.error("管理员账号不可被删除！")
         return false
     }
-    const res = await deleteUser(record._id)
+    const res = await deleteUser(record.id)
     if (res.status === 200) {
         message.success("删除成功")
         getList()
@@ -198,9 +195,9 @@ onMounted(() => {
         clearInterval(timer.value)
     }
     getList()
-    timer.value = setInterval(() => {
-        getList()
-    }, 3000)
+    // timer.value = setInterval(() => {
+    //     getList()
+    // }, 3000)
 })
 
 onUnmounted(() => {
